@@ -1,14 +1,9 @@
-function kiraJumlah() {
-    let anak1 = parseFloat(document.getElementById("anak1").value) || 0;
-    let anak2 = parseFloat(document.getElementById("anak2").value) || 0;
-    let anak3 = parseFloat(document.getElementById("anak3").value) || 0;
-    let anak4 = parseFloat(document.getElementById("anak4").value) || 0;
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("RekodDuitRaya");
+  var data = JSON.parse(e.postData.contents);
 
-    let jumlahKeseluruhan = anak1 + anak2 + anak3 + anak4;
+  // Simpan data ke Google Sheet
+  sheet.appendRow([new Date(), data.nama, data.tindakan, data.jumlah, data.total]);
 
-    document.getElementById("totalAnak1").innerText = "RM " + anak1.toFixed(2);
-    document.getElementById("totalAnak2").innerText = "RM " + anak2.toFixed(2);
-    document.getElementById("totalAnak3").innerText = "RM " + anak3.toFixed(2);
-    document.getElementById("totalAnak4").innerText = "RM " + anak4.toFixed(2);
-    document.getElementById("jumlahKeseluruhan").innerText = "RM " + jumlahKeseluruhan.toFixed(2);
+  return ContentService.createTextOutput("Success").setMimeType(ContentService.MimeType.TEXT);
 }
