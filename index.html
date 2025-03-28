@@ -9,6 +9,7 @@
         .container { width: 50%; margin: auto; }
         .child-box { border: 1px solid #ccc; padding: 20px; margin: 10px 0; }
         .amount { font-size: 20px; font-weight: bold; }
+        input { width: 80px; padding: 5px; text-align: center; }
         button { margin: 5px; padding: 10px; cursor: pointer; }
     </style>
 </head>
@@ -19,29 +20,33 @@
         <div class="child-box" id="faris">
             <h3>Faris Haikal</h3>
             <p>Jumlah: RM <span class="amount" id="amt-faris">0</span></p>
-            <button onclick="tambah('faris')">Tambah RM5</button>
-            <button onclick="tolak('faris')">Tolak RM5</button>
+            <input type="number" id="input-faris" placeholder="Masukkan jumlah">
+            <button onclick="tambah('faris')">Tambah</button>
+            <button onclick="tolak('faris')">Tolak</button>
         </div>
 
         <div class="child-box" id="iman">
             <h3>Iman Luqman</h3>
             <p>Jumlah: RM <span class="amount" id="amt-iman">0</span></p>
-            <button onclick="tambah('iman')">Tambah RM5</button>
-            <button onclick="tolak('iman')">Tolak RM5</button>
+            <input type="number" id="input-iman" placeholder="Masukkan jumlah">
+            <button onclick="tambah('iman')">Tambah</button>
+            <button onclick="tolak('iman')">Tolak</button>
         </div>
 
         <div class="child-box" id="izzul">
             <h3>Izzul Firdaus</h3>
             <p>Jumlah: RM <span class="amount" id="amt-izzul">0</span></p>
-            <button onclick="tambah('izzul')">Tambah RM5</button>
-            <button onclick="tolak('izzul')">Tolak RM5</button>
+            <input type="number" id="input-izzul" placeholder="Masukkan jumlah">
+            <button onclick="tambah('izzul')">Tambah</button>
+            <button onclick="tolak('izzul')">Tolak</button>
         </div>
 
         <div class="child-box" id="alyaa">
             <h3>Alyaa Sofiyya</h3>
             <p>Jumlah: RM <span class="amount" id="amt-alyaa">0</span></p>
-            <button onclick="tambah('alyaa')">Tambah RM5</button>
-            <button onclick="tolak('alyaa')">Tolak RM5</button>
+            <input type="number" id="input-alyaa" placeholder="Masukkan jumlah">
+            <button onclick="tambah('alyaa')">Tambah</button>
+            <button onclick="tolak('alyaa')">Tolak</button>
         </div>
     </div>
 
@@ -49,16 +54,30 @@
         let duitRaya = { faris: 0, iman: 0, izzul: 0, alyaa: 0 };
 
         function tambah(nama) {
-            duitRaya[nama] += 5;
-            document.getElementById("amt-" + nama).innerText = duitRaya[nama];
+            let input = document.getElementById("input-" + nama).value;
+            let jumlah = parseFloat(input);
+            if (!isNaN(jumlah) && jumlah > 0) {
+                duitRaya[nama] += jumlah;
+                document.getElementById("amt-" + nama).innerText = duitRaya[nama];
+                document.getElementById("input-" + nama).value = "";
+            } else {
+                alert("Masukkan jumlah yang sah!");
+            }
         }
 
         function tolak(nama) {
-            if (duitRaya[nama] >= 5) {
-                duitRaya[nama] -= 5;
-                document.getElementById("amt-" + nama).innerText = duitRaya[nama];
+            let input = document.getElementById("input-" + nama).value;
+            let jumlah = parseFloat(input);
+            if (!isNaN(jumlah) && jumlah > 0) {
+                if (duitRaya[nama] >= jumlah) {
+                    duitRaya[nama] -= jumlah;
+                    document.getElementById("amt-" + nama).innerText = duitRaya[nama];
+                    document.getElementById("input-" + nama).value = "";
+                } else {
+                    alert("Duit tidak mencukupi!");
+                }
             } else {
-                alert("Duit tidak mencukupi!");
+                alert("Masukkan jumlah yang sah!");
             }
         }
     </script>
