@@ -4,88 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rekod Duit Raya 2025</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .container { width: 50%; margin: auto; }
-        .child-box { border: 1px solid #ccc; padding: 20px; margin: 10px 0; }
-        .amount { font-size: 20px; font-weight: bold; }
-        input { width: 80px; padding: 5px; text-align: center; }
-        button { margin: 5px; padding: 10px; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-    <h2>Rekod Duit Raya 2025</h2>
-    <div class="container">
-        <div class="child-box" id="faris">
-            <h3>Faris Haikal</h3>
-            <p>Jumlah: RM <span class="amount" id="amt-faris">0</span></p>
-            <input type="number" id="input-faris" placeholder="Masukkan jumlah">
-            <button onclick="updateDuit('faris', 'Tambah')">Tambah</button>
-            <button onclick="updateDuit('faris', 'Tolak')">Tolak</button>
-        </div>
-
-        <div class="child-box" id="iman">
-            <h3>Iman Luqman</h3>
-            <p>Jumlah: RM <span class="amount" id="amt-iman">0</span></p>
-            <input type="number" id="input-iman" placeholder="Masukkan jumlah">
-            <button onclick="updateDuit('iman', 'Tambah')">Tambah</button>
-            <button onclick="updateDuit('iman', 'Tolak')">Tolak</button>
-        </div>
-
-        <div class="child-box" id="izzul">
-            <h3>Izzul Firdaus</h3>
-            <p>Jumlah: RM <span class="amount" id="amt-izzul">0</span></p>
-            <input type="number" id="input-izzul" placeholder="Masukkan jumlah">
-            <button onclick="updateDuit('izzul', 'Tambah')">Tambah</button>
-            <button onclick="updateDuit('izzul', 'Tolak')">Tolak</button>
-        </div>
-
-        <div class="child-box" id="alyaa">
-            <h3>Alyaa Sofiyya</h3>
-            <p>Jumlah: RM <span class="amount" id="amt-alyaa">0</span></p>
-            <input type="number" id="input-alyaa" placeholder="Masukkan jumlah">
-            <button onclick="updateDuit('alyaa', 'Tambah')">Tambah</button>
-            <button onclick="updateDuit('alyaa', 'Tolak')">Tolak</button>
-        </div>
-    </div>
-
     <script>
-        let duitRaya = { faris: 0, iman: 0, izzul: 0, alyaa: 0 };
-        const scriptURL = "PASTE_WEB_APP_URL_HERE"; // Gantikan dengan URL Apps Script
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyOAaqhXSW7La0wMk_4_fRPd1HJiUskbGROHoSqpyPmRUtMnhL_yLZjf27zGrRHIRpoFg/exec";
 
-        function updateDuit(nama, tindakan) {
-            let input = document.getElementById("input-" + nama).value;
-            let jumlah = parseFloat(input);
-            if (!isNaN(jumlah) && jumlah > 0) {
-                if (tindakan === "Tolak" && duitRaya[nama] < jumlah) {
-                    alert("Duit tidak mencukupi!");
-                    return;
-                }
+        function updateRecord(nama, tindakan) {
+            let jumlah = document.getElementById(nama).value;
+            if (jumlah === "") return alert("Masukkan jumlah dahulu!");
 
-                duitRaya[nama] = tindakan === "Tambah" ? duitRaya[nama] + jumlah : duitRaya[nama] - jumlah;
-                document.getElementById("amt-" + nama).innerText = duitRaya[nama];
-                document.getElementById("input-" + nama).value = "";
+            let data = {
+                nama: nama,
+                tindakan: tindakan,
+                jumlah: parseFloat(jumlah),
+                total: 0  // Boleh diubah jika ada pengiraan jumlah
+            };
 
-                // Hantar data ke Google Sheet
-                fetch(scriptURL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        nama: nama,
-                        tindakan: tindakan,
-                        jumlah: jumlah,
-                        total: duitRaya[nama]
-                    })
-                })
-                .then(response => response.text())
-                .then(result => console.log("Berjaya simpan:", result))
-                .catch(error => console.error("Ralat:", error));
-            } else {
-                alert("Masukkan jumlah yang sah!");
-            }
+            fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: { "Content-Type": "application/json" },
+            })
+            .then(response => response.text())
+            .then(data => alert("Rekod berjaya dikemas kini!"))
+            .catch(error => console.error("Error:", error));
         }
     </script>
+</head>
+<body>
+    <h2>Rekod Duit Raya 2025</h2>
 
+    <div>
+        <label>Faris Haikal:</label>
+        <input type="number" id="Faris Haikal" placeholder="Masukkan jumlah">
+        <button onclick="updateRecord('Faris Haikal', 'tambah')">Tambah</button>
+        <button onclick="updateRecord('Faris Haikal', 'tolak')">Tolak</button>
+    </div>
+
+    <div>
+        <label>Iman Luqman:</label>
+        <input type="number" id="Iman Luqman" placeholder="Masukkan jumlah">
+        <button onclick="updateRecord('Iman Luqman', 'tambah')">Tambah</button>
+        <button onclick="updateRecord('Iman Luqman', 'tolak')">Tolak</button>
+    </div>
+
+    <div>
+        <label>Izzul Firdaus:</label>
+        <input type="number" id="Izzul Firdaus" placeholder="Masukkan jumlah">
+        <button onclick="updateRecord('Izzul Firdaus', 'tambah')">Tambah</button>
+        <button onclick="updateRecord('Izzul Firdaus', 'tolak')">Tolak</button>
+    </div>
+
+    <div>
+        <label>Alyaa Sofiyya:</label>
+        <input type="number" id="Alyaa Sofiyya" placeholder="Masukkan jumlah">
+        <button onclick="updateRecord('Alyaa Sofiyya', 'tambah')">Tambah</button>
+        <button onclick="updateRecord('Alyaa Sofiyya', 'tolak')">Tolak</button>
+    </div>
 </body>
 </html>
