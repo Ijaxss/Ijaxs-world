@@ -3,54 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kira Duit Raya Anak</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Rekod Duit Raya 2025</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 50%; margin: auto; }
+        .child-box { border: 1px solid #ccc; padding: 20px; margin: 10px 0; }
+        .amount { font-size: 20px; font-weight: bold; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+    </style>
 </head>
 <body>
+
+    <h2>Rekod Duit Raya 2025</h2>
     <div class="container">
-        <h2>Kira Duit Raya Anak</h2>
-        <table>
-            <tr>
-                <th>Nama Anak</th>
-                <th>Jumlah (RM)</th>
-                <th>Tambah Duit Raya</th>
-            </tr>
-            <tr>
-                <td>Anak 1</td>
-                <td id="total1">0</td>
-                <td>
-                    <input type="number" id="input1" placeholder="Masukkan jumlah">
-                    <button onclick="tambahDuit(1)">Tambah</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Anak 2</td>
-                <td id="total2">0</td>
-                <td>
-                    <input type="number" id="input2" placeholder="Masukkan jumlah">
-                    <button onclick="tambahDuit(2)">Tambah</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Anak 3</td>
-                <td id="total3">0</td>
-                <td>
-                    <input type="number" id="input3" placeholder="Masukkan jumlah">
-                    <button onclick="tambahDuit(3)">Tambah</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Anak 4</td>
-                <td id="total4">0</td>
-                <td>
-                    <input type="number" id="input4" placeholder="Masukkan jumlah">
-                    <button onclick="tambahDuit(4)">Tambah</button>
-                </td>
-            </tr>
-        </table>
-        <h3>Jumlah Keseluruhan: RM <span id="grandTotal">0</span></h3>
+        <div class="child-box" id="faris">
+            <h3>Faris Haikal</h3>
+            <p>Jumlah: RM <span class="amount" id="amt-faris">0</span></p>
+            <button onclick="tambah('faris')">Tambah RM5</button>
+            <button onclick="tolak('faris')">Tolak RM5</button>
+        </div>
+
+        <div class="child-box" id="iman">
+            <h3>Iman Luqman</h3>
+            <p>Jumlah: RM <span class="amount" id="amt-iman">0</span></p>
+            <button onclick="tambah('iman')">Tambah RM5</button>
+            <button onclick="tolak('iman')">Tolak RM5</button>
+        </div>
+
+        <div class="child-box" id="izzul">
+            <h3>Izzul Firdaus</h3>
+            <p>Jumlah: RM <span class="amount" id="amt-izzul">0</span></p>
+            <button onclick="tambah('izzul')">Tambah RM5</button>
+            <button onclick="tolak('izzul')">Tolak RM5</button>
+        </div>
+
+        <div class="child-box" id="alyaa">
+            <h3>Alyaa Sofiyya</h3>
+            <p>Jumlah: RM <span class="amount" id="amt-alyaa">0</span></p>
+            <button onclick="tambah('alyaa')">Tambah RM5</button>
+            <button onclick="tolak('alyaa')">Tolak RM5</button>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let duitRaya = { faris: 0, iman: 0, izzul: 0, alyaa: 0 };
+
+        function tambah(nama) {
+            duitRaya[nama] += 5;
+            document.getElementById("amt-" + nama).innerText = duitRaya[nama];
+        }
+
+        function tolak(nama) {
+            if (duitRaya[nama] >= 5) {
+                duitRaya[nama] -= 5;
+                document.getElementById("amt-" + nama).innerText = duitRaya[nama];
+            } else {
+                alert("Duit tidak mencukupi!");
+            }
+        }
+    </script>
+
 </body>
 </html>
