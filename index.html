@@ -1,57 +1,47 @@
-<script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyOAaqhXSW7La0wMk_4_fRPd1HJiUskbGROHoSqpyPmRUtMnhL_yLZjf27zGrRHIRpoFg/exec";
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekod Duit Raya 2025</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Rekod Duit Raya 2025</h1>
+    <div id="container"></div>
 
-    async function updateRecord(nama, tindakan) {
-        let jumlahInput = document.getElementById(nama);
-        let jumlah = parseFloat(jumlahInput.value);
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const data = ["Faris Haikal", "Iman Luqman", "Izzul Firdaus", "Alyaa Sofiyya"];
+            const container = document.getElementById("container");
 
-        if (isNaN(jumlah) || jumlah <= 0) {
-            alert("Masukkan jumlah yang sah!");
-            return;
-        }
-
-        let params = new URLSearchParams();
-        params.append("nama", nama);
-        params.append("tindakan", tindakan);
-        params.append("jumlah", jumlah);
-
-        try {
-            let response = await fetch(scriptURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: params
+            data.forEach(nama => {
+                const div = document.createElement("div");
+                div.className = "record";
+                div.innerHTML = `
+                    <p>${nama}: <span class="total" data-name="${nama}">0</span></p>
+                    <input type="number" value="15" class="amount" data-name="${nama}">
+                    <button onclick="updateAmount('${nama}', 'tambah')">Tambah</button>
+                    <button onclick="updateAmount('${nama}', 'tolak')">Tolak</button>
+                `;
+                container.appendChild(div);
             });
+        });
 
-            let result = await response.text();
-            if (result.trim() === "Success") {
-                jumlahInput.value = ""; // Kosongkan input selepas berjaya
-                fetchData(); // Refresh jumlah terkini
-            } else {
-                alert("Ralat: " + result);
+        function updateAmount(nama, tindakan) {
+            const jumlahInput = document.querySelector(`.amount[data-name='${nama}']`);
+            const totalSpan = document.querySelector(`.total[data-name='${nama}']`);
+            let jumlah = parseInt(jumlahInput.value) || 0;
+            let total = parseInt(totalSpan.innerText) || 0;
+            
+            if (tindakan === "tambah") {
+                total += jumlah;
+            } else if (tindakan === "tolak") {
+                total -= jumlah;
             }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Gagal menghubungi server. Semak URL Web App!");
+            
+            totalSpan.innerText = total;
         }
-    }
-
-    async function fetchData() {
-        try {
-            let response = await fetch(scriptURL);
-            let data = await response.json();
-            data.slice(1).forEach(row => {
-                let nama = row[0];
-                let jumlah = row[1];
-                let jumlahSpan = document.getElementById(nama + "-jumlah");
-
-                if (jumlahSpan) {
-                    jumlahSpan.textContent = jumlah;
-                }
-            });
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }
-
-    window.onload = fetchData;
-</script>
+    </script>
+</body>
+</html>
