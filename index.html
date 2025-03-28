@@ -3,57 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekod Duit Raya 2025</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Rekod Duit Raya</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label, select, input {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #message {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Rekod Duit Raya 2025</h1>
-    <div id="container"></div>
+
+    <h2>Rekod Duit Raya</h2>
+    <form id="duitRayaForm">
+        <label for="nama">Nama Anak:</label>
+        <select id="nama" required>
+            <option value="">-- Pilih Nama --</option>
+            <option value="Ahmad">Ahmad</option>
+            <option value="Siti">Siti</option>
+            <option value="Ali">Ali</option>
+            <option value="Fatimah">Fatimah</option>
+            <option value="Hafiz">Hafiz</option>
+        </select>
+
+        <label for="tindakan">Tindakan:</label>
+        <select id="tindakan" required>
+            <option value="Terima">Terima</option>
+            <option value="Belanja">Belanja</option>
+            <option value="Simpan">Simpan</option>
+        </select>
+
+        <label for="jumlah">Jumlah (RM):</label>
+        <input type="number" id="jumlah" min="1" required>
+
+        <button type="button" onclick="hantarData()">Hantar</button>
+    </form>
+
+    <p id="message"></p>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const data = ["Faris Haikal", "Iman Luqman", "Izzul Firdaus", "Alyaa Sofiyya"];
-            const container = document.getElementById("container");
+        function hantarData() {
+            var nama = document.getElementById("nama").value;
+            var tindakan = document.getElementById("tindakan").value;
+            var jumlah = document.getElementById("jumlah").value;
 
-            data.forEach(nama => {
-                const div = document.createElement("div");
-                div.className = "record";
-                div.innerHTML = `
-                    <p>${nama}: <span class="total" data-name="${nama}">0</span></p>
-                    <input type="number" value="15" class="amount" data-name="${nama}">
-                    <button onclick="updateAmount('${nama}', 'tambah')">Tambah</button>
-                    <button onclick="updateAmount('${nama}', 'tolak')">Tolak</button>
-                `;
-                container.appendChild(div);
-            });
-        });
-
-        function updateAmount(nama, tindakan) {
-            const jumlahInput = document.querySelector(`.amount[data-name='${nama}']`);
-            const totalSpan = document.querySelector(`.total[data-name='${nama}']`);
-            let jumlah = parseInt(jumlahInput.value) || 0;
-            let total = parseInt(totalSpan.innerText) || 0;
-            
-            if (tindakan === "tambah") {
-                total += jumlah;
-            } else if (tindakan === "tolak") {
-                total -= jumlah;
+            if (nama === "" || tindakan === "" || jumlah === "") {
+                document.getElementById("message").innerHTML = "Sila isi semua maklumat.";
+                return;
             }
-            
-            totalSpan.innerText = total;
-            sendData(nama, tindakan, jumlah, total);
-        }
 
-        function sendData(nama, tindakan, jumlah, total) {
-            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+            var data = {
+                nama: nama,
+                tindakan: tindakan,
+                jumlah: jumlah
+            };
+
+            fetch("https://script.google.com/macros/s/AKfycbyM92mViL4DgxAEHNeUeoch61p1RNK90N4btA3a6o7gLWtUtGAyrp4EfqSWRWMF1j5lzA/exec", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nama, tindakan, jumlah, total })
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
-            .then(response => response.text())
-            .then(data => console.log("Success:", data))
-            .catch(error => console.error("Error:", error));
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById("message").innerHTML = result.message;
+                document.getElementById("duitRayaForm").reset();
+            })
+            .catch(error => {
+                document.getElementById("message").innerHTML = "Ralat menghantar data.";
+                console.error("Error:", error);
+            });
         }
     </script>
+
 </body>
 </html>
