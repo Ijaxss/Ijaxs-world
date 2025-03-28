@@ -41,6 +41,18 @@
             }
             
             totalSpan.innerText = total;
+            sendData(nama, tindakan, jumlah, total);
+        }
+
+        function sendData(nama, tindakan, jumlah, total) {
+            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nama, tindakan, jumlah, total })
+            })
+            .then(response => response.text())
+            .then(data => console.log("Success:", data))
+            .catch(error => console.error("Error:", error));
         }
     </script>
 </body>
