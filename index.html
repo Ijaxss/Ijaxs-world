@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kira Duit Raya Anak</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Kira Duit Raya Anak</h2>
+        <table>
+            <tr>
+                <th>Nama Anak</th>
+                <th>Jumlah (RM)</th>
+                <th>Tambah Duit Raya</th>
+            </tr>
+            <tr>
+                <td>Anak 1</td>
+                <td id="total1">0</td>
+                <td>
+                    <input type="number" id="input1" placeholder="Masukkan jumlah">
+                    <button onclick="tambahDuit(1)">Tambah</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Anak 2</td>
+                <td id="total2">0</td>
+                <td>
+                    <input type="number" id="input2" placeholder="Masukkan jumlah">
+                    <button onclick="tambahDuit(2)">Tambah</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Anak 3</td>
+                <td id="total3">0</td>
+                <td>
+                    <input type="number" id="input3" placeholder="Masukkan jumlah">
+                    <button onclick="tambahDuit(3)">Tambah</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Anak 4</td>
+                <td id="total4">0</td>
+                <td>
+                    <input type="number" id="input4" placeholder="Masukkan jumlah">
+                    <button onclick="tambahDuit(4)">Tambah</button>
+                </td>
+            </tr>
+        </table>
+        <h3>Jumlah Keseluruhan: RM <span id="grandTotal">0</span></h3>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
