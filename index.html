@@ -5,125 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rekod Duit Raya</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        select, input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-        }
-        button {
-            background-color: green;
-            color: white;
-            padding: 10px;
-            border: none;
-            width: 100%;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: darkgreen;
-        }
-        .notification {
-            margin-top: 10px;
-            font-weight: bold;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { width: 100%; max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); }
+        select, input, button { width: 100%; padding: 10px; margin-top: 10px; }
+        button { background-color: green; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: darkgreen; }
+        .success { color: green; }
+        .error { color: red; }
     </style>
 </head>
 <body>
 
     <h2>Rekod Duit Raya</h2>
     <div class="container">
-        <label for="nama">Nama Anak:</label>
+        <label>Nama Anak:</label>
         <select id="nama">
-            <option value="Faris">Faris</option>
-            <option value="Iman">Iman</option>
-            <option value="Izzul">Izzul</option>
-            <option value="Yaya">Yaya</option>
+            <option>Faris</option>
+            <option>Iman</option>
+            <option>Izzul</option>
+            <option>Yaya</option>
         </select>
 
-        <label for="tindakan">Tindakan:</label>
+        <label>Tindakan:</label>
         <select id="tindakan">
-            <option value="Terima">Terima</option>
-            <option value="Belanja">Belanja</option>
+            <option>Terima</option>
+            <option>Belanja</option>
         </select>
 
-        <label for="jumlah">Jumlah (RM):</label>
+        <label>Jumlah (RM):</label>
         <input type="number" id="jumlah" placeholder="Masukkan jumlah" />
 
         <button onclick="hantarData()">Hantar</button>
-        
-        <p class="notification" id="notifikasi"></p>
-        
+        <p id="notifikasi"></p>
+
         <h3>Jumlah Terkini</h3>
         <p id="jumlahTerkini">0</p>
     </div>
 
     <script>
-        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxsNR5GYum0e7eATCRYhN6c0eGqxO3aUUjxAgpBxcaKPxm-vS8lXd2JPfvzhLgo7bkOmQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycby20jGaKSpDoRbi_TggFokctZcOIBkNylxmc_X4SuhOMa7c_nJmfvheRnH9M0TsMj_cxQ/exec";  // Gantikan dengan URL Apps Script
 
-        function hantarData() {
-            let nama = document.getElementById("nama").value;
-            let tindakan = document.getElementById("tindakan").value;
-            let jumlah = document.getElementById("jumlah").value;
-            let notifikasi = document.getElementById("notifikasi");
+        async function hantarData() {
+            const nama = document.getElementById("nama").value;
+            const tindakan = document.getElementById("tindakan").value;
+            const jumlah = document.getElementById("jumlah").value;
+            const notifikasi = document.getElementById("notifikasi");
 
-            if (jumlah === "" || jumlah <= 0) {
-                notifikasi.style.color = "red";
-                notifikasi.textContent = "Masukkan jumlah yang sah!";
+            if (!jumlah) {
+                notifikasi.innerHTML = "<span class='error'>Sila masukkan jumlah!</span>";
                 return;
             }
 
-            let data = {
-                nama: nama,
-                tindakan: tindakan,
-                jumlah: jumlah
-            };
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nama, tindakan, jumlah })
+                });
 
-            fetch(URL_APPS_SCRIPT, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
+                const result = await response.json();
                 if (result.status === "success") {
-                    notifikasi.style.color = "green";
-                    notifikasi.textContent = "Data berjaya disimpan!";
-                    updateJumlahTerkini(jumlah, tindakan);
+                    notifikasi.innerHTML = "<span class='success'>" + result.message + "</span>";
+                    muatSemulaJumlah();
                 } else {
-                    notifikasi.style.color = "red";
-                    notifikasi.textContent = "Ralat menghantar data!";
+                    notifikasi.innerHTML = "<span class='error'>" + result.message + "</span>";
                 }
-            })
-            .catch(error => {
-                notifikasi.style.color = "red";
-                notifikasi.textContent = "Ralat: " + error.message;
-            });
-        }
-
-        function updateJumlahTerkini(jumlah, tindakan) {
-            let jumlahTerkini = document.getElementById("jumlahTerkini");
-            let jumlahSemasa = parseFloat(jumlahTerkini.textContent);
-
-            if (tindakan === "Terima") {
-                jumlahSemasa += parseFloat(jumlah);
-            } else {
-                jumlahSemasa -= parseFloat(jumlah);
+            } catch (error) {
+                notifikasi.innerHTML = "<span class='error'>Ralat: " + error.message + "</span>";
             }
-
-            jumlahTerkini.textContent = jumlahSemasa.toFixed(2);
         }
+
+        async function muatSemulaJumlah() {
+            try {
+                const response = await fetch(API_URL + "?fungsi=jumlahTerkini");
+                const result = await response.json();
+                document.getElementById("jumlahTerkini").innerText = result.jumlah;
+            } catch (error) {
+                console.error("Gagal ambil jumlah:", error);
+            }
+        }
+
+        muatSemulaJumlah();
     </script>
 
 </body>
