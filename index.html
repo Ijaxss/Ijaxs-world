@@ -7,108 +7,122 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h2 {
             text-align: center;
+            margin: 20px;
         }
-        form {
+        .container {
             max-width: 400px;
             margin: auto;
-            background: white;
             padding: 20px;
+            border: 1px solid #ccc;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
-        label, select, input {
+        select, input {
             width: 100%;
-            margin-bottom: 10px;
             padding: 8px;
-            font-size: 16px;
+            margin: 10px 0;
         }
         button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
+            background-color: green;
             color: white;
+            padding: 10px;
             border: none;
+            width: 100%;
             cursor: pointer;
-            font-size: 16px;
         }
         button:hover {
-            background-color: #218838;
+            background-color: darkgreen;
         }
-        #message {
-            text-align: center;
+        .notification {
             margin-top: 10px;
-            font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <h2>Rekod Duit Raya</h2>
-    <form id="duitRayaForm">
+    <div class="container">
         <label for="nama">Nama Anak:</label>
-        <select id="nama" required>
-            <option value="">-- Pilih Nama --</option>
-            <option value="Ahmad">Ahmad</option>
-            <option value="Siti">Siti</option>
-            <option value="Ali">Ali</option>
-            <option value="Fatimah">Fatimah</option>
-            <option value="Hafiz">Hafiz</option>
+        <select id="nama">
+            <option value="Faris">Faris</option>
+            <option value="Iman">Iman</option>
+            <option value="Izzul">Izzul</option>
+            <option value="Yaya">Yaya</option>
         </select>
 
         <label for="tindakan">Tindakan:</label>
-        <select id="tindakan" required>
+        <select id="tindakan">
             <option value="Terima">Terima</option>
             <option value="Belanja">Belanja</option>
-            <option value="Simpan">Simpan</option>
         </select>
 
         <label for="jumlah">Jumlah (RM):</label>
-        <input type="number" id="jumlah" min="1" required>
+        <input type="number" id="jumlah" placeholder="Masukkan jumlah" />
 
-        <button type="button" onclick="hantarData()">Hantar</button>
-    </form>
-
-    <p id="message"></p>
+        <button onclick="hantarData()">Hantar</button>
+        
+        <p class="notification" id="notifikasi"></p>
+        
+        <h3>Jumlah Terkini</h3>
+        <p id="jumlahTerkini">0</p>
+    </div>
 
     <script>
-        function hantarData() {
-            var nama = document.getElementById("nama").value;
-            var tindakan = document.getElementById("tindakan").value;
-            var jumlah = document.getElementById("jumlah").value;
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyM92mViL4DgxAEHNeUeoch61p1RNK90N4btA3a6o7gLWtUtGAyrp4EfqSWRWMF1j5lzA/exec";
 
-            if (nama === "" || tindakan === "" || jumlah === "") {
-                document.getElementById("message").innerHTML = "Sila isi semua maklumat.";
+        function hantarData() {
+            let nama = document.getElementById("nama").value;
+            let tindakan = document.getElementById("tindakan").value;
+            let jumlah = document.getElementById("jumlah").value;
+            let notifikasi = document.getElementById("notifikasi");
+
+            if (jumlah === "" || jumlah <= 0) {
+                notifikasi.style.color = "red";
+                notifikasi.textContent = "Masukkan jumlah yang sah!";
                 return;
             }
 
-            var data = {
+            let data = {
                 nama: nama,
                 tindakan: tindakan,
                 jumlah: jumlah
             };
 
-            fetch("https://script.google.com/macros/s/AKfycbyM92mViL4DgxAEHNeUeoch61p1RNK90N4btA3a6o7gLWtUtGAyrp4EfqSWRWMF1j5lzA/exec", {
+            fetch(URL_APPS_SCRIPT, {
                 method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json"
-                }
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
             })
             .then(response => response.json())
             .then(result => {
-                document.getElementById("message").innerHTML = result.message;
-                document.getElementById("duitRayaForm").reset();
+                if (result.status === "success") {
+                    notifikasi.style.color = "green";
+                    notifikasi.textContent = "Data berjaya disimpan!";
+                    updateJumlahTerkini(jumlah, tindakan);
+                } else {
+                    notifikasi.style.color = "red";
+                    notifikasi.textContent = "Ralat menghantar data!";
+                }
             })
             .catch(error => {
-                document.getElementById("message").innerHTML = "Ralat menghantar data.";
-                console.error("Error:", error);
+                notifikasi.style.color = "red";
+                notifikasi.textContent = "Ralat: " + error.message;
             });
+        }
+
+        function updateJumlahTerkini(jumlah, tindakan) {
+            let jumlahTerkini = document.getElementById("jumlahTerkini");
+            let jumlahSemasa = parseFloat(jumlahTerkini.textContent);
+
+            if (tindakan === "Terima") {
+                jumlahSemasa += parseFloat(jumlah);
+            } else {
+                jumlahSemasa -= parseFloat(jumlah);
+            }
+
+            jumlahTerkini.textContent = jumlahSemasa.toFixed(2);
         }
     </script>
 
