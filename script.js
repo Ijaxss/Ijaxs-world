@@ -1,43 +1,20 @@
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".btn").forEach(function (button) {
-    button.addEventListener("click", function () {
-      let row = this.closest(".row");
-      let nama = row.querySelector(".nama").textContent;
-      let jumlahInput = row.querySelector(".jumlah").value;
-      let tindakan = this.classList.contains("tambah") ? "Tambah" : "Tolak";
+function updateAmount(nama, tindakan) {
+    const jumlahInput = document.querySelector(`.amount[data-name='${nama}']`);
+    const totalSpan = document.querySelector(`.total[data-name='${nama}']`);
+    let jumlah = parseInt(jumlahInput.value) || 0;
+    let total = parseInt(totalSpan.innerText) || 0;
 
-      if (!jumlahInput || isNaN(jumlahInput)) {
-        alert("Sila masukkan jumlah yang sah!");
-        return;
-      }
+    if (tindakan === "tambah") total += jumlah;
+    else if (tindakan === "tolak") total -= jumlah;
 
-      let jumlah = parseFloat(jumlahInput);
-      let totalElement = row.querySelector(".total");
-      let total = parseFloat(totalElement.textContent) || 0;
+    totalSpan.innerText = total;
 
-      if (tindakan === "Tambah") {
-        total += jumlah;
-      } else {
-        total -= jumlah;
-      }
-
-      totalElement.textContent = total;
-
-      fetch("https://script.google.com/macros/s/AKfycbyOAaqhXSW7La0wMk_4_fRPd1HJiUskbGROHoSqpyPmRUtMnhL_yLZjf27zGrRHIRpoFg/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbyOAaqhXSW7La0wMk_4_fRPd1HJiUskbGROHoSqpyPmRUtMnhL_yLZjf27zGrRHIRpoFg/exec ", {
         method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nama: nama,
-          tindakan: tindakan,
-          jumlah: jumlah,
-          total: total,
-        }),
-      }).then(() => {
-        console.log("Data dihantar ke Google Sheet");
-      }).catch(error => console.error("Ralat:", error));
-    });
-  });
-});
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama, tindakan, jumlah, total })
+    })
+    .then(response => response.text())
+    .then(console.log)
+    .catch(console.error);
+}
