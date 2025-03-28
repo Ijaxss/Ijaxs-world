@@ -1,85 +1,57 @@
-<!DOCTYPE html>
-<html lang="ms">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekod Duit Raya 2025</title>
-    <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyOAaqhXSW7La0wMk_4_fRPd1HJiUskbGROHoSqpyPmRUtMnhL_yLZjf27zGrRHIRpoFg/exec";
+<script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyOAaqhXSW7La0wMk_4_fRPd1HJiUskbGROHoSqpyPmRUtMnhL_yLZjf27zGrRHIRpoFg/exec";
 
-        async function updateRecord(nama, tindakan) {
-            let jumlahInput = document.getElementById(nama);
-            let jumlah = parseFloat(jumlahInput.value);
-            if (isNaN(jumlah) || jumlah <= 0) {
-                alert("Masukkan jumlah yang sah!");
-                return;
+    async function updateRecord(nama, tindakan) {
+        let jumlahInput = document.getElementById(nama);
+        let jumlah = parseFloat(jumlahInput.value);
+
+        if (isNaN(jumlah) || jumlah <= 0) {
+            alert("Masukkan jumlah yang sah!");
+            return;
+        }
+
+        let params = new URLSearchParams();
+        params.append("nama", nama);
+        params.append("tindakan", tindakan);
+        params.append("jumlah", jumlah);
+
+        try {
+            let response = await fetch(scriptURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params
+            });
+
+            let result = await response.text();
+            if (result.trim() === "Success") {
+                jumlahInput.value = ""; // Kosongkan input selepas berjaya
+                fetchData(); // Refresh jumlah terkini
+            } else {
+                alert("Ralat: " + result);
             }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Gagal menghubungi server. Semak URL Web App!");
+        }
+    }
 
-            let data = new FormData();
-            data.append("nama", nama);
-            data.append("tindakan", tindakan);
-            data.append("jumlah", jumlah);
+    async function fetchData() {
+        try {
+            let response = await fetch(scriptURL);
+            let data = await response.json();
+            data.slice(1).forEach(row => {
+                let nama = row[0];
+                let jumlah = row[1];
+                let jumlahSpan = document.getElementById(nama + "-jumlah");
 
-            try {
-                let response = await fetch(scriptURL, { method: "POST", body: data });
-                let result = await response.text();
-                if (result === "Success") {
-                    jumlahInput.value = "";
-                    fetchData();
-                } else {
-                    alert("Ralat: " + result);
+                if (jumlahSpan) {
+                    jumlahSpan.textContent = jumlah;
                 }
-            } catch (error) {
-                console.error("Error:", error);
-            }
+            });
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
+    }
 
-        async function fetchData() {
-            try {
-                let response = await fetch(scriptURL);
-                let data = await response.json();
-                data.slice(1).forEach(row => {
-                    let nama = row[0];
-                    let jumlah = row[1];
-                    document.getElementById(nama + "-jumlah").textContent = jumlah;
-                });
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        window.onload = fetchData;
-    </script>
-</head>
-<body>
-    <h2>Rekod Duit Raya 2025</h2>
-
-    <div>
-        <label>Faris Haikal: <span id="Faris Haikal-jumlah">0</span></label>
-        <input type="number" id="Faris Haikal" placeholder="Masukkan jumlah">
-        <button onclick="updateRecord('Faris Haikal', 'tambah')">Tambah</button>
-        <button onclick="updateRecord('Faris Haikal', 'tolak')">Tolak</button>
-    </div>
-
-    <div>
-        <label>Iman Luqman: <span id="Iman Luqman-jumlah">0</span></label>
-        <input type="number" id="Iman Luqman" placeholder="Masukkan jumlah">
-        <button onclick="updateRecord('Iman Luqman', 'tambah')">Tambah</button>
-        <button onclick="updateRecord('Iman Luqman', 'tolak')">Tolak</button>
-    </div>
-
-    <div>
-        <label>Izzul Firdaus: <span id="Izzul Firdaus-jumlah">0</span></label>
-        <input type="number" id="Izzul Firdaus" placeholder="Masukkan jumlah">
-        <button onclick="updateRecord('Izzul Firdaus', 'tambah')">Tambah</button>
-        <button onclick="updateRecord('Izzul Firdaus', 'tolak')">Tolak</button>
-    </div>
-
-    <div>
-        <label>Alyaa Sofiyya: <span id="Alyaa Sofiyya-jumlah">0</span></label>
-        <input type="number" id="Alyaa Sofiyya" placeholder="Masukkan jumlah">
-        <button onclick="updateRecord('Alyaa Sofiyya', 'tambah')">Tambah</button>
-        <button onclick="updateRecord('Alyaa Sofiyya', 'tolak')">Tolak</button>
-    </div>
-</body>
-</html>
+    window.onload = fetchData;
+</script>
