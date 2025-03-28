@@ -9,23 +9,23 @@
 
         function updateRecord(nama, tindakan) {
             let jumlah = document.getElementById(nama).value;
-            if (jumlah === "") return alert("Masukkan jumlah dahulu!");
+            if (jumlah === "" || isNaN(jumlah)) {
+                alert("Masukkan jumlah yang sah!");
+                return;
+            }
 
-            let data = {
-                nama: nama,
-                tindakan: tindakan,
-                jumlah: parseFloat(jumlah),
-                total: 0  // Boleh diubah jika ada pengiraan jumlah
-            };
+            let data = new FormData();
+            data.append("nama", nama);
+            data.append("tindakan", tindakan);
+            data.append("jumlah", jumlah);
 
-            fetch(scriptURL, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: { "Content-Type": "application/json" },
-            })
-            .then(response => response.text())
-            .then(data => alert("Rekod berjaya dikemas kini!"))
-            .catch(error => console.error("Error:", error));
+            fetch(scriptURL, { method: "POST", body: data })
+                .then(response => response.text())
+                .then(data => {
+                    alert("Rekod berjaya dikemas kini!");
+                    document.getElementById(nama).value = ""; // Kosongkan input selepas hantar
+                })
+                .catch(error => console.error("Error:", error));
         }
     </script>
 </head>
