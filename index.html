@@ -21,61 +21,66 @@
             <h3>Faris Haikal</h3>
             <p>Jumlah: RM <span class="amount" id="amt-faris">0</span></p>
             <input type="number" id="input-faris" placeholder="Masukkan jumlah">
-            <button onclick="tambah('faris')">Tambah</button>
-            <button onclick="tolak('faris')">Tolak</button>
+            <button onclick="updateDuit('faris', 'Tambah')">Tambah</button>
+            <button onclick="updateDuit('faris', 'Tolak')">Tolak</button>
         </div>
 
         <div class="child-box" id="iman">
             <h3>Iman Luqman</h3>
             <p>Jumlah: RM <span class="amount" id="amt-iman">0</span></p>
             <input type="number" id="input-iman" placeholder="Masukkan jumlah">
-            <button onclick="tambah('iman')">Tambah</button>
-            <button onclick="tolak('iman')">Tolak</button>
+            <button onclick="updateDuit('iman', 'Tambah')">Tambah</button>
+            <button onclick="updateDuit('iman', 'Tolak')">Tolak</button>
         </div>
 
         <div class="child-box" id="izzul">
             <h3>Izzul Firdaus</h3>
             <p>Jumlah: RM <span class="amount" id="amt-izzul">0</span></p>
             <input type="number" id="input-izzul" placeholder="Masukkan jumlah">
-            <button onclick="tambah('izzul')">Tambah</button>
-            <button onclick="tolak('izzul')">Tolak</button>
+            <button onclick="updateDuit('izzul', 'Tambah')">Tambah</button>
+            <button onclick="updateDuit('izzul', 'Tolak')">Tolak</button>
         </div>
 
         <div class="child-box" id="alyaa">
             <h3>Alyaa Sofiyya</h3>
             <p>Jumlah: RM <span class="amount" id="amt-alyaa">0</span></p>
             <input type="number" id="input-alyaa" placeholder="Masukkan jumlah">
-            <button onclick="tambah('alyaa')">Tambah</button>
-            <button onclick="tolak('alyaa')">Tolak</button>
+            <button onclick="updateDuit('alyaa', 'Tambah')">Tambah</button>
+            <button onclick="updateDuit('alyaa', 'Tolak')">Tolak</button>
         </div>
     </div>
 
     <script>
         let duitRaya = { faris: 0, iman: 0, izzul: 0, alyaa: 0 };
+        const scriptURL = "PASTE_WEB_APP_URL_HERE"; // Gantikan dengan URL Apps Script
 
-        function tambah(nama) {
+        function updateDuit(nama, tindakan) {
             let input = document.getElementById("input-" + nama).value;
             let jumlah = parseFloat(input);
             if (!isNaN(jumlah) && jumlah > 0) {
-                duitRaya[nama] += jumlah;
+                if (tindakan === "Tolak" && duitRaya[nama] < jumlah) {
+                    alert("Duit tidak mencukupi!");
+                    return;
+                }
+
+                duitRaya[nama] = tindakan === "Tambah" ? duitRaya[nama] + jumlah : duitRaya[nama] - jumlah;
                 document.getElementById("amt-" + nama).innerText = duitRaya[nama];
                 document.getElementById("input-" + nama).value = "";
-            } else {
-                alert("Masukkan jumlah yang sah!");
-            }
-        }
 
-        function tolak(nama) {
-            let input = document.getElementById("input-" + nama).value;
-            let jumlah = parseFloat(input);
-            if (!isNaN(jumlah) && jumlah > 0) {
-                if (duitRaya[nama] >= jumlah) {
-                    duitRaya[nama] -= jumlah;
-                    document.getElementById("amt-" + nama).innerText = duitRaya[nama];
-                    document.getElementById("input-" + nama).value = "";
-                } else {
-                    alert("Duit tidak mencukupi!");
-                }
+                // Hantar data ke Google Sheet
+                fetch(scriptURL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nama: nama,
+                        tindakan: tindakan,
+                        jumlah: jumlah,
+                        total: duitRaya[nama]
+                    })
+                })
+                .then(response => response.text())
+                .then(result => console.log("Berjaya simpan:", result))
+                .catch(error => console.error("Ralat:", error));
             } else {
                 alert("Masukkan jumlah yang sah!");
             }
